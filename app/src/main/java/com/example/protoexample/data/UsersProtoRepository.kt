@@ -13,13 +13,6 @@ class UsersProtoRepository @Inject constructor(
     //get data
     val usersProtoFlow: Flow<UsersListProto> = dataStore.data
 
-    //writing data
-    suspend fun updateUsersList(listOfUserProto: List<UserProto>) {
-        dataStore.updateData { currentUsers ->
-            currentUsers.toBuilder().addAllUsersProto(listOfUserProto).build()
-        }
-    }
-
     suspend fun insertUser(name: String, email: String, gender: String) {
         dataStore.updateData { currentUsers ->
             val user: UserProto =

@@ -7,6 +7,7 @@ sealed interface MainEvents {
         val gender: String
     ): MainEvents
     object ClearUsersButtonClick: MainEvents
+    object GetUserFromOnlineService: MainEvents
     data class SetNameEvent(val name: String): MainEvents
     data class SetEmailEvent(val email: String): MainEvents
     data class SetGenderEvent(val gender: String): MainEvents

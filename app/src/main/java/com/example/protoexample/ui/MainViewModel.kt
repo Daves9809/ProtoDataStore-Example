@@ -1,10 +1,12 @@
 package com.example.protoexample.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.protoexample.Constant
 import com.example.protoexample.UsersListProto
 import com.example.protoexample.data.User
 import com.example.protoexample.data.UsersProtoRepository
+import com.example.protoexample.data.UsersServiceRepository
 import com.example.protoexample.ui.state.MainEffects
 import com.example.protoexample.ui.state.MainEvents
 import com.example.protoexample.ui.state.MainPartialState
@@ -15,13 +17,15 @@ import com.tomcz.ellipse.common.toNoAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 typealias MainScreenProcessor = Processor<MainEvents, MainScreenState, MainEffects>
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val usersProtoRepository: UsersProtoRepository
+    private val usersProtoRepository: UsersProtoRepository,
+    private val usersServiceRepository: UsersServiceRepository
 ) : androidx.lifecycle.ViewModel() {
 
     val processor: MainScreenProcessor = processor(
@@ -47,9 +51,23 @@ class MainViewModel @Inject constructor(
                 is MainEvents.SetGenderEvent -> flowOf (
                     MainPartialState.SetGender(event.gender)
                 )
+                is MainEvents.GetUserFromOnlineService -> flow {
+                    val result = getUsersFromAPI()
+                    if (result.isSuccessful){
+                        result.body()?.forEach { user ->
+                            addUser(user.name,user.email,user.gender)
+                        }
+                    }else{
+                        Log.e("TAG","Error: ${result.message()}")
+                    }
+                }
             }
         }
     )
+
+    private suspend fun getUsersFromAPI(): Response<List<User>> {
+        return usersServiceRepository.getUsersFromAPI()
+    }
 
     private fun convertUserListProtoToUserList(usersListProto: UsersListProto): List<User> {
         val size = usersListProto.usersProtoCount

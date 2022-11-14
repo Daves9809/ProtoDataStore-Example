@@ -77,7 +77,8 @@ fun Buttons(
             Button(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4f))
-                    .width(150.dp),
+                    .width(150.dp)
+                    .padding(end = 5.dp),
                 onClick = {
                     processor.sendEvent(MainEvents.AddUserButtonClick(name, email, gender))
                     processor.sendEvent(MainEvents.SetNameEvent(""))
@@ -90,7 +91,7 @@ fun Buttons(
                 .clip(RoundedCornerShape(4f))
                 .width(150.dp),
                 onClick = {
-
+                    processor.sendEvent(MainEvents.GetUserFromOnlineService)
                 }) {
                 Text(text = "Get users from online service")
             }
@@ -140,7 +141,7 @@ fun LazyList(listOfUsers: List<User>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .height(350.dp)
+            .height(300.dp)
     ) {
         items(listOfUsers) { user ->
             UserItem(user)
